@@ -2,10 +2,10 @@ const express = require('express')
 const httpProxy = require('express-http-proxy')
 
 const { userDuty, memberRole } = require('./middlewares/authorizations.middleware')
-const { system_api_url, notification_api_url } = require('./urls')
+const { system, notification } = require('./services')
 
-const systemProxy = httpProxy(system_api_url)
-const notificationProxy = httpProxy(notification_api_url)
+const systemProxy = httpProxy(system)
+const notificationProxy = httpProxy(notification)
 
 const app = express()
 const port = 3000
