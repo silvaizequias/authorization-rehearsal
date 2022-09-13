@@ -1,14 +1,14 @@
 import httpProxy from 'express-http-proxy'
 import cookieParser from 'cookie-parser'
 import express from 'express'
-import { Services } from './services'
+import { MicroServices } from './microservices'
 import { Authorizations } from './middlewares/authorizatios.middleware'
 
 const app = express()
 const port = process.env.PORT || 3000
 
-const server1 = httpProxy(Services.ms1)
-const server2 = httpProxy(Services.ms2)
+const server1 = httpProxy(MicroServices.ms1)
+const server2 = httpProxy(MicroServices.ms2)
 
 const authProfile = Authorizations
 
