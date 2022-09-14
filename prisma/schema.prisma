@@ -1,6 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -8,4 +5,71 @@ generator client {
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
+}
+
+model grupo {
+  id_grupo       Int         @id @default(autoincrement())
+  nome           String?     @db.VarChar(50)
+  descricao      String?     @db.VarChar(200)
+  id_organizacao Int
+  id_sistema     Int
+  id_rota        Int
+  id_rest        Int
+  organizacao    organizacao @relation(fields: [id_organizacao], references: [id_organizacao], onDelete: NoAction, onUpdate: NoAction)
+  rest           rest        @relation(fields: [id_rest], references: [id_rest], onDelete: NoAction, onUpdate: NoAction)
+  rota           rota        @relation(fields: [id_rota], references: [id_rota], onDelete: NoAction, onUpdate: NoAction)
+  sistema        sistema     @relation(fields: [id_sistema], references: [id_sistema], onDelete: NoAction, onUpdate: NoAction)
+  papeis         papeis[]
+}
+
+model organizacao {
+  id_organizacao Int     @id @default(autoincrement())
+  nome           String? @db.VarChar(50)
+  descricao      String? @db.VarChar(200)
+  grupo          grupo[]
+}
+
+model papeis {
+  id_papeis Int        @id @default(autoincrement())
+  nome      String?    @db.VarChar(50)
+  id_grupo  Int
+  grupo     grupo      @relation(fields: [id_grupo], references: [id_grupo], onDelete: NoAction, onUpdate: NoAction)
+  usuarios  usuarios[]
+}
+
+model rest {
+  id_rest   Int     @id @default(autoincrement())
+  nome      String? @db.VarChar(50)
+  descricao String? @db.VarChar(200)
+  grupo     grupo[]
+}
+
+model rota {
+  id_rota   Int     @id @default(autoincrement())
+  nome      String? @db.VarChar(50)
+  descricao String? @db.VarChar(200)
+  grupo     grupo[]
+}
+
+model sistema {
+  id_sistema Int     @id @default(autoincrement())
+  nome       String? @db.VarChar(50)
+  descricao  String? @db.VarChar(200)
+  grupo      grupo[]
+}
+
+model usuarios {
+  id_user      Int      @id @default(autoincrement())
+  nome         String?  @db.VarChar(50)
+  id_papeis    Int
+  cpf          String?  @db.VarChar(14)
+  email        String?  @db.VarChar(50)
+  phone        String?  @db.VarChar(50)
+  password     String?  @db.VarChar(50)
+  passwordhash String?  @db.VarChar(200)
+  img          String?  @db.VarChar(50)
+  active       Boolean?
+  companyname  String?  @db.VarChar(50)
+  positionheld String?  @db.VarChar(50)
+  papeis       papeis   @relation(fields: [id_papeis], references: [id_papeis], onDelete: NoAction, onUpdate: NoAction)
 }
