@@ -1,3 +1,5 @@
+import prisma from '../lib/prisma'
+
 export const Authorizations = (auth: any) => {
   return (req, res, next) => {
     const authProfile = req.body.group
