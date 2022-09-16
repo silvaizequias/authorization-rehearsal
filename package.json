@@ -2,7 +2,7 @@
   "name": "authorization-rehearsal",
   "version": "1.0.0",
   "description": "",
-  "main": "src/server.ts",
+  "main": "src/server.js",
   "scripts": {
     "test": "vitest",
     "build": "tsc",
@@ -28,8 +28,7 @@
     "eslint-plugin-promise": "^6.0.1",
     "prisma": "^4.3.1",
     "ts-node-dev": "^2.0.0",
-    "typescript": "^4.8.3",
-    "vitest": "^0.23.2"
+    "typescript": "^4.8.3"
   },
   "dependencies": {
     "@prisma/client": "^4.3.1",

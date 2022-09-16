@@ -1,0 +1,41 @@
+version: '3'
+
+services:
+  attlas-authorization:
+    image: 'authorization:latest'
+    restart: always
+    build: ./
+    environment:
+      - HOST=0.0.0.0
+      - SERVER_PORT=3300
+      - DATABASE_URL="postgresql://postgres:postgres@localhost:5432/authorization"
+    ports:
+      - '3300:3300'
+
+  postgres-authorization:
+    image: postgres
+    environment:
+      POSTGRES_USERNAME: "postgres"
+      POSTGRES_PASSWORD: "postgres"
+    ports:
+      - "5432:5432"
+#    volumes:
+#      - ./data:/var/lib/postgresql/data
+    networks:
+      - postgres-authorization-network
+   
+  pgadmin-authorization:
+    image: dpage/pgadmin4
+    environment:
+      PGADMIN_DEFAULT_EMAIL: "postgres@email.com"
+      PGADMIN_DEFAULT_PASSWORD: "postgres"
+    ports:
+      - "15432:80"
+    depends_on:
+      - postgres-authorization
+    networks:
+      - postgres-authorization-network
+
+networks: 
+  postgres-authorization-network:
+    driver: bridge
