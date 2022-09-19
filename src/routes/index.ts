@@ -18,11 +18,11 @@ router.get('/auth', authProfile([1, 2, 3, 4]), (req, res, next) => {
   res.status(200).send("You're Authorized!")
 })
 
-router.get('/server1', (req, res, next) => {
+router.get('/server1', authProfile([3, 4]), (req, res, next) => {
   server1(req, res, next)
 })
 
-router.get('/server2', (req, res, next) => {
+router.get('/server2', authProfile([1, 2]), (req, res, next) => {
   server2(req, res, next)
 })
 
