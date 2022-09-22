@@ -1,12 +1,12 @@
 import prisma from '../lib/prisma'
 
-export const Authorizations = (auth: any) => {
+export const Authorizations = (authorization: any) => {
   return (req, res, next) => {
-    const authProfile = req.body.group
-    if (auth.includes(authProfile)) {
+    const group = req.body.group
+    if (authorization.includes(group)) {
       next()
     } else {
       return res.status(401).json("You Are'nt Authorization!")
     }
   }
-}
+}   

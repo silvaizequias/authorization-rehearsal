@@ -1,75 +1,130 @@
 generator client {
-  provider = "prisma-client-js"
+    provider = "prisma-client-js"
 }
 
 datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
+    provider = "postgresql"
+    url      = env("DATABASE_URL")
 }
 
-model grupo {
-  id_grupo       Int         @id @default(autoincrement())
-  nome           String?     @db.VarChar(50)
-  descricao      String?     @db.VarChar(200)
-  id_organizacao Int
-  id_sistema     Int
-  id_rota        Int
-  id_rest        Int
-  organizacao    organizacao @relation(fields: [id_organizacao], references: [id_organizacao], onDelete: NoAction, onUpdate: NoAction)
-  rest           rest        @relation(fields: [id_rest], references: [id_rest], onDelete: NoAction, onUpdate: NoAction)
-  rota           rota        @relation(fields: [id_rota], references: [id_rota], onDelete: NoAction, onUpdate: NoAction)
-  sistema        sistema     @relation(fields: [id_sistema], references: [id_sistema], onDelete: NoAction, onUpdate: NoAction)
-  papeis         papeis[]
+
+model User {
+    id                  String      @id                 @default(cuid())
+    createdAt           DateTime    @default(now())     @map("created_at")
+    updatedAt           DateTime    @updatedAt          @map("updated_at")
+
+    name                String      @db.VarChar(50)
+    cpf                 String      @db.VarChar(14)
+    email               String      @db.VarChar(50)
+    phone               String      @db.VarChar(50)
+    password            String      @db.VarChar(50)
+    passwordhash        String      @db.VarChar(200)    @map("password_hash")
+    img                 String?     @db.VarChar(50)
+    companyName         String?     @db.VarChar(50)     @map("company_name")
+    positionHeld        String?     @db.VarChar(50)     @map("position_held")
+    active              Boolean     @default(true)
+
+    roles               UsersOnRoles[]
+
+    @@unique([cpf, email, phone])
+    @@map("users")
+}   
+
+model UsersOnRoles {
+    createdAt           DateTime    @default(now())     @map("created_at")
+    updatedAt           DateTime    @updatedAt          @map("updated_at")
+
+    userId              String      @map("user_id")
+    user                User        @relation(fields: [userId], references: [id])
+    roleId              String      @map("role_id")
+    role                Role        @relation(fields: [roleId], references: [id])
+
+    @@map("users_on_roles")
+    @@id([userId, roleId])
 }
 
-model organizacao {
-  id_organizacao Int     @id @default(autoincrement())
-  nome           String? @db.VarChar(50)
-  descricao      String? @db.VarChar(200)
-  grupo          grupo[]
+model Role {
+    id                  String          @id                 @default(cuid())
+    createdAt           DateTime        @default(now())     @map("created_at")
+    updatedAt           DateTime        @updatedAt          @map("updated_at")
+
+    name                String          @db.VarChar(50)
+    description         String?         @db.VarChar(200)
+
+    organizations       OrganizationsOnRoles[]
+    systems             SystemsOnRoles[]
+    users               UsersOnRoles[]
+    routes              Route[]
+
+    @@map("roles")
 }
 
-model papeis {
-  id_papeis Int        @id @default(autoincrement())
-  nome      String?    @db.VarChar(50)
-  id_grupo  Int
-  grupo     grupo      @relation(fields: [id_grupo], references: [id_grupo], onDelete: NoAction, onUpdate: NoAction)
-  usuarios  usuarios[]
+model Organization {
+    id                  String          @id                 @default(cuid())
+    createdAt           DateTime        @default(now())     @map("created_at")
+    updatedAt           DateTime        @updatedAt          @map("updated_at")
+
+    name                String          @db.VarChar(50)
+    description         String?         @db.VarChar(200)
+
+    roles               OrganizationsOnRoles[]
+
+    @@unique([name])
+    @@map("organizations")
 }
 
-model rest {
-  id_rest   Int     @id @default(autoincrement())
-  nome      String? @db.VarChar(50)
-  descricao String? @db.VarChar(200)
-  grupo     grupo[]
+model OrganizationsOnRoles {
+    createdAt           DateTime        @default(now())     @map("created_at")
+    updatedAt           DateTime        @updatedAt          @map("updated_at")
+
+    organizationId      String          @map("organization_id")
+    organization        Organization    @relation(fields: [organizationId], references: [id])
+    roleId              String          @map("role_id")
+    role                Role            @relation(fields: [roleId], references: [id])
+
+    @@map("organizations_on_roles")
+    @@id([organizationId, roleId])
 }
 
-model rota {
-  id_rota   Int     @id @default(autoincrement())
-  nome      String? @db.VarChar(50)
-  descricao String? @db.VarChar(200)
-  grupo     grupo[]
+model System {
+    id                  String          @id                 @default(cuid())
+    createdAt           DateTime        @default(now())     @map("created_at")
+    updatedAt           DateTime        @updatedAt          @map("updated_at")
+
+    name                String          @db.VarChar(50)
+    description         String?         @db.VarChar(200)
+
+    roles               SystemsOnRoles[]
+
+    @@unique([name])
+    @@map("systems")
 }
 
-model sistema {
-  id_sistema Int     @id @default(autoincrement())
-  nome       String? @db.VarChar(50)
-  descricao  String? @db.VarChar(200)
-  grupo      grupo[]
+model SystemsOnRoles {
+    createdAt           DateTime        @default(now())     @map("created_at")
+    updatedAt           DateTime        @updatedAt          @map("updated_at")
+
+    systemId            String          @map("system_id")
+    system              System          @relation(fields: [systemId], references: [id])
+    roleId              String          @map("role_id")
+    role                Role            @relation(fields: [roleId], references: [id])
+
+    @@map("systems_on_roles")
+    @@id([systemId, roleId])
 }
 
-model usuarios {
-  id_user      Int      @id @default(autoincrement())
-  nome         String?  @db.VarChar(50)
-  id_papeis    Int
-  cpf          String?  @db.VarChar(14)
-  email        String?  @db.VarChar(50)
-  phone        String?  @db.VarChar(50)
-  password     String?  @db.VarChar(50)
-  passwordhash String?  @db.VarChar(200)
-  img          String?  @db.VarChar(50)
-  active       Boolean?
-  companyname  String?  @db.VarChar(50)
-  positionheld String?  @db.VarChar(50)
-  papeis       papeis   @relation(fields: [id_papeis], references: [id_papeis], onDelete: NoAction, onUpdate: NoAction)
+model Route {
+    id                  String          @id                 @default(cuid())
+    createdAt           DateTime        @default(now())     @map("created_at")
+    updatedAt           DateTime        @updatedAt          @map("updated_at")
+
+    roleId              String          @map("role_id")
+    role                Role            @relation(fields: [roleId], references: [id])
+
+    name                String?         @db.VarChar(50)
+    description         String?         @db.VarChar(200)
+    url                 String          @db.VarChar(50)
+    method              String          @db.VarChar(10)
+
+    @@map("routes")
 }
